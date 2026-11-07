@@ -1,101 +1,275 @@
-# MoveWise
+# 🧍 MoveWise – AI-Powered Movement & Posture Coach
 
 **Smarter guidance for every movement.**
 
-An adaptive AI movement coach: it understands which of four exercises you're doing, finds the invisible form mistake that matters most, shows the correction on a ghost reference fitted to your own body, adapts *how* it coaches when you don't improve, checks comfort before pushing, adapts its analysis to different body configurations, and measures whether you actually got better.
+MoveWise is an AI-powered movement and posture coaching application designed to help users improve their exercise technique through real-time pose detection, personalized feedback, and movement analysis.
 
-> Don't adapt your body to the AI. Let the AI adapt to you.
+Using computer vision and adaptive coaching, MoveWise analyzes body movements, identifies posture mistakes, provides corrective guidance, and tracks exercise progress.
+
+The goal is simple: **make movement guidance smarter, more accessible, and personalized.**
 
 ---
 
-## Run
+## ✨ Features
+
+### 1. AI-Powered Exercise Recognition
+- Automatically recognizes supported exercises.
+- Uses computer vision and pose detection.
+- Supports webcam and video-based movement analysis.
+
+### 2. Exercise Library
+
+MoveWise currently supports four exercises:
+
+| Category | Exercise |
+|---|---|
+| Yoga | Warrior II |
+| Yoga | Tree Pose |
+| Fitness | Squat |
+| Fitness | Bicep Curl |
+
+### 3. Real-Time Posture Analysis
+- Detects body landmarks.
+- Analyzes posture and movement.
+- Identifies common exercise form mistakes.
+- Provides corrective feedback during exercise sessions.
+
+### 4. Ghost Coach 👻
+- Displays a reference movement guide.
+- Helps users understand correct body alignment.
+- Uses visual guidance and correction arrows.
+
+### 5. Adaptive Coaching
+- Prioritizes important posture corrections.
+- Adjusts coaching instructions based on movement performance.
+- Provides easier exercise variations when needed.
+- Includes comfort feedback to make coaching more user-friendly.
+
+### 6. Personal Body Map
+- Adapts movement analysis to the landmarks that can be tracked.
+- Supports Standard and Adaptive analysis modes.
+- Avoids treating untracked body landmarks as incorrect posture.
+
+### 7. Exercise Tracking & Progress
+- Tracks exercise sessions and performance.
+- Records repetitions and movement scores where applicable.
+- Provides session summaries.
+- Helps users review their exercise history and progress.
+
+### 8. User Authentication & Profiles
+- User registration and login.
+- Password hashing using bcrypt.
+- Personal profile information.
+- SQLite-based user and exercise record storage.
+
+---
+
+## 🛠️ Technologies Used
+
+| Technology | Purpose |
+|---|---|
+| Python | Core application development |
+| Streamlit | Interactive web application |
+| OpenCV | Camera and video processing |
+| MediaPipe | Human pose landmark detection |
+| NumPy | Numerical computations |
+| SQLite | User and exercise data storage |
+| bcrypt | Password hashing |
+
+---
+
+## 🏗️ Project Structure
+
+```text
+MoveWise/
+│
+├── app.py
+├── db_handler.py
+├── requirements.txt
+├── README.md
+├── run.bat
+├── package.py
+├── export_samples.py
+│
+├── core/
+│   ├── engine.py
+│   ├── detector.py
+│   ├── landmarks.py
+│   ├── smoothing.py
+│   ├── scoring.py
+│   ├── coaching.py
+│   ├── motion.py
+│   ├── bodymap.py
+│   ├── bodygroups.py
+│   ├── phases.py
+│   ├── reference.py
+│   ├── session.py
+│   ├── storage.py
+│   └── synthetic.py
+│
+├── exercises/
+│   ├── base.py
+│   ├── registry.py
+│   ├── warrior2.py
+│   ├── tree_pose.py
+│   ├── squat.py
+│   └── bicep_curl.py
+│
+├── ui/
+│   ├── theme.py
+│   └── overlay.py
+│
+├── models/
+│   └── pose_landmarker_lite.task
+│
+├── data/
+│
+└── test_*.py
+```
+
+---
+
+## ⚙️ Installation & Setup
+
+### Prerequisites
+
+- Python 3.10 or a compatible Python version.
+- Git.
+- Webcam (optional if using sample clips or video input).
+
+### Step 1: Clone the repository
+
+```bash
+git clone https://github.com/Sneha225-ui/Move-Wise.git
+```
+
+### Step 2: Navigate to the project folder
+
+```bash
+cd Move-Wise
+```
+
+### Step 3: Create a virtual environment
+
+```bash
+python -m venv venv
+```
+
+Activate it on Windows:
+
+```bash
+venv\Scripts\activate
+```
+
+### Step 4: Install dependencies
 
 ```bash
 pip install -r requirements.txt
+```
+
+### Step 5: Run the application
+
+```bash
 streamlit run app.py
 ```
 
-Or double-click `run.bat` (Windows). One instance per machine — the pose reader uses the local webcam.
+The application will open in your browser.
 
-The pose model (~6 MB) is bundled in `models/`; no network needed on first run.
-
-## Verify without a camera
-
-Each suite prints PASS/FAIL lines and ends with `FAILURES: none`:
-
-```bash
-python test_pipeline.py       # pose engine, smoothing, body map
-python test_clips.py          # sample clips behave as their captions claim
-python test_analysis.py      # analyzers, phases, reps, scoring, ghost
-python test_coaching.py      # escalation ladder, comfort check, variations
-python test_session.py       # session recording and summaries
-python test_accessibility.py # adaptive mode and fair scoring
-python test_motion.py        # movement control / stability coach
-python test_progress.py      # 7-day persistent progress
-python test_robust.py        # outlier rejection, ghost alignment
-```
-
-## The demo path (no hardware needed)
-
-Home → **Library** → Squat → set Input to **Sample clip** → **Run calibration** → **Continue to live analysis**.
-
-- **"Squat — knees caving in"** shows one prioritised cue while three faults are live.
-- **"Squat — held fault (coaching demo)"** climbs the full coaching ladder: notice → instruct → focus, text → arrow → ghost emphasis, then the comfort check and an easier variation.
-- **"Squat — fast/jerky"** triggers the Movement Control coach.
-
-Webcam and uploaded video work the same way — pick a different Input.
+**Alternative:** Windows users can also run `run.bat`.
 
 ---
 
-## Architecture
+## 🧪 Testing
 
-One pose engine, four exercise profiles, one structured result. The engine never knows what an exercise is; a profile never touches MediaPipe; the UI reads only the common `ExerciseResult`.
+MoveWise includes test suites for different application components.
 
-```
-Camera / Video / Scripted clip                    core/source.py, synthetic.py
-  └─ PoseDetector (MediaPipe, both API gens)      core/detector.py
-       └─ PoseSmoother (One Euro + outlier        core/smoothing.py
-          rejection + dropout coasting)
-            └─ Personal Body Map                  core/bodymap.py, bodygroups.py
-               Standard / Adaptive mode
-                 └─ PoseEngine → EngineFrame      core/engine.py
-                      ├─ Exercise profiles        exercises/*.py
-                      │    phases · reps/holds    core/phases.py
-                      │    errors + debounce      core/errors.py
-                      │    scoring + quality      core/scoring.py
-                      │    motion control         core/motion.py
-                      ├─ Ghost Coach              core/reference.py
-                      ├─ Adaptive coaching        core/coaching.py
-                      │    escalate → modality →
-                      │    comfort → variation
-                      └─ Session → Progress       core/session.py, storage.py
+Run individual tests using:
+
+```bash
+python test_pipeline.py
+python test_clips.py
+python test_analysis.py
+python test_coaching.py
+python test_session.py
+python test_accessibility.py
+python test_motion.py
+python test_progress.py
+python test_robust.py
 ```
 
-### The honesty rule everything rests on
-
-Every measurement is `MEASURED`, `UNMEASURED` (couldn't see it), or `NOT_APPLICABLE` (this user's body map doesn't include it). Nothing is ever reported correct because it wasn't seen, unmeasured metrics leave the score untouched rather than scoring zero, and a landmark the camera can't track is never a posture error. That single rule carries the accessibility story end to end.
-
-### Coaching, not detection
-
-Faults pass two gates before the user hears anything: a hysteresis debounce (5 frames to appear, 10 to clear — one bad frame never speaks) and a priority ladder (`SAFETY > ALIGNMENT > STABILITY > RANGE > REFINEMENT`) that lets exactly one cue through. If the same fault persists, the *wording* escalates (notice → instruct → focus) and the *teaching method* escalates (text → simplified → arrow → ghost emphasis). Still stuck → comfort check → predefined easier variation. Every correction is verified against the following reps and logged as fixed or failed.
-
-### Movement Control (stability coach)
-
-Landmark motion over time — velocity, jerk, sway, normalized by torso length — produces a 0–100 **Movement control** score and calm cues ("You're moving too quickly — slow down."). It infers intensity from pose motion; it does not and cannot measure physical force. Exercise-aware thresholds: a squat is allowed to move; a tree pose is not. Low-confidence frames are never judged.
-
-### Progress
-
-Sessions persist to local JSON (`data/sessions.json`, atomic writes, survives restarts — no accounts, no cloud). The Progress screen shows a 7-day view (empty days say so; nothing is fabricated), previous sessions with their saved summaries, per-exercise progress (never merged across exercises), earliest→latest improvement, and a weekly summary.
+These tests cover pose processing, exercise analysis, coaching, movement control, accessibility, session recording, and progress tracking.
 
 ---
 
-## Safety
+## 🔄 How MoveWise Works
 
-MoveWise provides fitness and movement guidance only. It does not diagnose medical conditions, injuries, or instability, and it is not a substitute for a qualified physiotherapist or doctor. Reported pain stops the set and refers out. This disclaimer is shown in-app on every screen.
-
-## Packaging
-
-```bash
-python package.py        # builds movewise.zip with the model bundled
-python export_samples.py # writes the sample clips as .mp4 files
+```text
+User Input
+    |
+    v
+Camera / Video / Sample Clip
+    |
+    v
+Pose Detection
+    |
+    v
+Body Landmark Extraction
+    |
+    v
+Movement & Posture Analysis
+    |
+    v
+Exercise Recognition
+    |
+    v
+Adaptive Coaching
+    |
+    v
+Visual Feedback & Ghost Coach
+    |
+    v
+Session Summary
+    |
+    v
+Progress Tracking
 ```
+
+---
+
+## 🛡️ Safety & Disclaimer
+
+MoveWise is designed for general fitness and movement guidance.
+
+- It is not a medical diagnostic tool.
+- It does not replace professional medical advice or physiotherapy.
+- Users should stop exercising if they experience pain or discomfort.
+- Exercise feedback should be used as general guidance, not as a guarantee of injury prevention.
+
+---
+
+## 🚀 Future Scope
+
+Potential future improvements include:
+
+- Support for additional exercises.
+- More personalized exercise recommendations.
+- Enhanced movement analysis.
+- Improved progress visualizations.
+- Expanded accessibility features.
+- More advanced AI-based coaching.
+
+---
+
+## 👩‍💻 Developer
+
+Sneha Singh Chauhan
+
+Project: **MoveWise – AI-Powered Movement & Posture Coach**
+
+GitHub: https://github.com/Sneha225-ui
+
+---
+
+⭐ If you find MoveWise interesting, consider giving the repository a star!
+
+**MoveWise – Don't adapt your body to the AI. Let the AI adapt to you.**
